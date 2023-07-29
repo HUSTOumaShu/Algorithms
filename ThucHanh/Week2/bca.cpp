@@ -3,10 +3,9 @@
 using namespace std;
 #define MAX 100
 
-int n, m, maxC;  // n - number of teacher, m - number of course, maxC - number coflicting course
-int d[MAX][MAX]; // d - list of course teacher could teach
-int res[MAX];    // result (res[course] = teacher)
-bool checkConf[MAX][MAX];
+int n, m, maxC;             // n - number of teacher, m - number of course, maxC - number coflicting course
+int d[MAX][MAX], c[MAX][2]; // d - list of course teacher could teach, c - conflicting of course
+int res[MAX];               // result (res[course] = teacher)
 
 bool checkList(int v, int k)
 {
@@ -29,36 +28,35 @@ bool checkConflict(int k, int v)
     {
         if (res[i] == v)
         {
-            if (checkConf[i][k])
-                return false;
+            for (int j = 1; j <= maxC; j++)
+            {
+                if ((c[j][0] == i && c[j][1] == k))
+                {
+                    return false;
+                    break;
+                }
+            }
         }
     }
     return true;
 }
 
-// int solution()
-// {
-//     if (res[m] == 0)
-//         return -1;
-//     int count[n + 1];
-//     int result = 0;
-//     memset(count, 0, n + 1);
-//     for (int i = 1; i <= m; i++)
-//     {
-//         count[res[i]]++;
-//     }
-//     for (int i = 1; i <= n; i++)
-//     {
-//         result = max(result, count[i]);
-//     }
-//     return result;
-// }
-
-void solution()
+int solution()
 {
+    if (res[m] == 0)
+        return -1;
+    int count[n + 1];
+    int result = 0;
+    memset(count, 0, n + 1);
     for (int i = 1; i <= m; i++)
-        cout << res[i] << " ";
-    cout << endl;
+    {
+        count[res[i]]++;
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        result = max(result, count[i]);
+    }
+    return result;
 }
 
 bool check(int k, int v)
@@ -70,16 +68,13 @@ bool check(int k, int v)
 
 void Try(int k)
 {
-    cout << k << " ";
-    for (int v = 1; v <= 4; v++)
+    for (int v = 1; v <= n; v++)
     {
         if (check(k, v))
         {
             res[k] = v;
             if (k == m)
-            {
-                solution();
-            }
+                cout << solution() << endl;
             else
                 Try(k + 1);
         }
@@ -98,10 +93,6 @@ int main()
     }
     cin >> maxC;
     for (int i = 1; i <= maxC; i++)
-    {
-        int x, y;
-        cin >> x >> y;
-        checkConf[x][y] = true;
-    }
+        cin >> c[i][0] >> c[i][1];
     Try(1);
 }
